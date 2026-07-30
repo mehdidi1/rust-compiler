@@ -1,18 +1,17 @@
 #pragma once
-#include <ostream>
 #include <iostream>
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include "Token.h"
 
-
 class Lexer {
-public:
-    Lexer(const std::string& source);
+  public:
+    Lexer(const std::string &source);
     std::vector<Token> tokenize();
 
-private:
+  private:
     char peek();
     char advance();
     bool isAtEnd();
