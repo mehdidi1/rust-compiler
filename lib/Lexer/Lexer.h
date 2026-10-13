@@ -21,8 +21,8 @@ class Lexer {
     Token scanSingleChar(char c, TokenType type);
     Token scanNumber();
 
-    std::string source;
-    int pos = 0;
-    int line = 1;
-    int column = 1;
+    std::string source_;
+    size_t pos_ = 0;
+    int line_ = 1;
+    int column_ = 1;
 };
