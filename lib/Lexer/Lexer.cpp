@@ -1,31 +1,31 @@
 #include "Lexer.h"
 
-Lexer::Lexer(const std::string &source) : source(source) {}
+Lexer::Lexer(const std::string &source) : source_(source) {}
 
 char Lexer::peek() {
     if (isAtEnd())
         return '\0';
 
-    return source[pos];
+    return source_[pos_];
 }
 
 char Lexer::advance() {
     if (isAtEnd())
         return '\0';
 
-    char c = source[pos++];
+    char c = source_[pos_++];
 
     if (c == '\n') {
-        line++;
-        column = 1;
+        line_++;
+        column_ = 1;
     } else {
-        column++;
+        column_++;
     }
 
     return c;
 }
 
-bool Lexer::isAtEnd() { return pos >= (int)source.size(); }
+bool Lexer::isAtEnd() { return pos_ >= source_.size(); }
 
 void Lexer::skipWhitespace() {
     while (!isAtEnd()) {
@@ -39,8 +39,8 @@ void Lexer::skipWhitespace() {
 }
 
 Token Lexer::scanWord() {
-    int startLine = line;
-    int startCol = column;
+    int startLine = line_;
+    int startCol = column_;
     std::string word;
 
     while (!isAtEnd() && (isalnum(peek()) || peek() == '_')) {
@@ -55,8 +55,8 @@ Token Lexer::scanWord() {
 }
 
 Token Lexer::scanString() {
-    int startLine = line;
-    int startCol = column;
+    int startLine = line_;
+    int startCol = column_;
     advance(); // skip opening "
 
     std::string value;
@@ -69,15 +69,15 @@ Token Lexer::scanString() {
 }
 
 Token Lexer::scanSingleChar(char c, TokenType type) {
-    int startLine = line;
-    int startCol = column;
+    int startLine = line_;
+    int startCol = column_;
     advance();
     return {type, std::string(1, c), startLine, startCol};
 }
 
 Token Lexer::scanNumber() {
-    int startLine = line;
-    int startCol = column;
+    int startLine = line_;
+    int startCol = column_;
     std::string num;
 
     while (!isAtEnd() && isdigit(peek())) {
@@ -102,10 +102,10 @@ std::vector<Token> Lexer::tokenize() {
             tokens.push_back(scanWord());
         } else if (c == '"') {
             tokens.push_back(scanString());
-        } else if (c == '-' && pos + 1 < (int)source.size() &&
-                   source[pos + 1] == '>') {
-            int startLine = line;
-            int startCol = column;
+        } else if (c == '-' && pos_ + 1 < source_.size() &&
+                   source_[pos_ + 1] == '>') {
+            int startLine = line_;
+            int startCol = column_;
             advance(); // skip -
             advance(); // skip >
             tokens.push_back({TokenType::Arrow, "->", startLine, startCol});
@@ -114,13 +114,13 @@ std::vector<Token> Lexer::tokenize() {
         } else if (isdigit(c)) {
             tokens.push_back(scanNumber());
         } else {
-            std::cerr << "Unexpected character '" << c << "' at line " << line
-                      << ", column " << column << std::endl;
+            std::cerr << "Unexpected character '" << c << "' at line " << line_
+                      << ", column " << column_ << std::endl;
 
             advance();
         }
     }
 
-    tokens.push_back({TokenType::Eof, "", line, column});
+    tokens.push_back({TokenType::Eof, "", line_, column_});
     return tokens;
 }
